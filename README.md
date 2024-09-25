@@ -2,7 +2,7 @@
 Alice and Bob play a game of chess, but they can choose their style of playing each round. In each round, they
 can choose to be aggressive, balanced or defensive. A win gets +1 point, a draw gets +0.5, and a loss gets 0
 points. <br />
-There is a probability matrix which describes the probability of winning, losing, or draw for each player. <br />
+There is a probability matrix which describes the probability of winning, losing, or draw for each player. These probilities in the case of attack, depends on the previous wins of both the players.<br />
 1) In the first case, Bob's form is susceptible to his performance in the previous round.<br />
 • If he won the previous round, then he chooses to play defensively. <br />
 • If the previous round resulted in a draw, then he plays balanced. <br />
