@@ -1,0 +1,139 @@
+import numpy as np
+import random
+
+class Alice:
+    def __init__(self):
+        self.past_play_styles = np.array([1,1])  
+        self.results = np.array([1,0])           
+        self.opp_play_styles = np.array([1,1])  
+        self.points = 1
+
+    def play_move(self):
+        """
+        Decide Alice's play style for the current round.
+        
+        Returns: 
+            0 : attack
+            1 : balanced
+            2 : defence
+
+        """
+        if(self.results[-1]==1):
+            if (len(self.results)-self.points)/len(self.results) > 6/11:
+                return 0
+            else:
+                return 2
+        elif(self.results[-1]==0):
+            return 1
+        else:
+            return 0
+        pass        
+    
+    def observe_result(self, own_style, opp_style, result):
+        """
+        Update Alice's knowledge after each round based on the observed results.
+        
+        Returns:
+            None
+        """
+        self.past_play_styles=np.append(self.past_play_styles, own_style)
+        self.results=np.append(self.results,result)
+        self.opp_play_styles=np.append(self.opp_play_styles, opp_style)
+        self.points += result
+        pass
+       
+
+class Bob:
+    def __init__(self):
+        # Initialize numpy arrays to store Bob's past play styles, results, and opponent's play styles
+        self.past_play_styles = np.array([1,1]) 
+        self.results = np.array([0,1])          
+        self.opp_play_styles = np.array([1,1])   
+        self.points = 1
+
+    def play_move(self):
+        """
+        Decide Bob's play style for the current round.
+
+        Returns: 
+            0 : attack
+            1 : balanced
+            2 : defence
+        
+        """
+        if self.results[-1] == 1:
+            return 2
+        elif self.results[-1] == 0.5:
+            return 1
+        else:  
+            return 0
+        
+        
+        
+    
+    def observe_result(self, own_style, opp_style, result):
+        """
+        Update Bob's knowledge after each round based on the observed results.
+        
+        Returns:
+            None
+        """
+        self.past_play_styles=np.append(self.past_play_styles, own_style)
+        self.results=np.append(self.results,result)
+        self.opp_play_styles=np.append(self.opp_play_styles, opp_style)
+        self.points += result
+ 
+
+def simulate_round(alice, bob, payoff_matrix):
+    """
+    Simulates a single round of the game between Alice and Bob.
+    
+    Returns:
+        None
+    """
+    
+    alice_move = alice.play_move()
+    bob_move = bob.play_move()
+    payoff_matrix[0][0]=(bob.points/(bob.points+alice.points),0,alice.points/(alice.points+bob.points))
+    arr=[1,0.5,0]
+    result=random.choices(arr, weights=(payoff_matrix[alice_move][bob_move][0], payoff_matrix[alice_move][bob_move][1], payoff_matrix[alice_move][bob_move][2]), k=1)
+    alice.observe_result(alice_move, bob_move, result[0])
+    bob.observe_result(bob_move, alice_move, 1 - result[0])
+    
+    pass
+
+def estimate_tau(T):
+    """
+    Estimate the expected value of the number of rounds taken for Alice to win 'T' rounds.
+    Your total number of simulations must not exceed 10^5.
+
+    Returns:
+        Float: estimated value of E[tau]
+    """
+    #running the loop in function for 10000 times and will average the sum of the number of games over 10000
+    total=1000
+    sum=0
+    for i in range(total):
+        alice=Alice()
+        bob=Bob()
+        payoff_matrix = np.array([
+        [(bob.points/(bob.points+alice.points),0,alice.points/(alice.points+bob.points)), (0.7,0,0.3), (5/11,0,6/11)],  
+        [(0.3, 0, 0.7), (1/3,1/3,1/3), (0.3,0.5,0.2)], 
+        [(6/11,0,5/11), (0.2,0.5,0.3), (0.1,0.8,0.1)]   
+        ])
+        #first match already won by alice
+        no_of_wins=1
+        #we have to check from 3rd match
+        no_of_games=2
+        #run the loop until you get T wins 
+        while(no_of_wins<T and no_of_games<=10**5):
+            no_of_games+=1
+            simulate_round(alice,bob,payoff_matrix)
+            if(alice.results[-1]==1):#match won by alice
+                no_of_wins+=1
+        sum+=no_of_games
+    print(sum/total)
+    pass
+estimate_tau(72)    
+
+    
