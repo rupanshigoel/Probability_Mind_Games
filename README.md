@@ -11,4 +11,4 @@ a. Here I have simulated the greedy strategy where Alice maximises her chance of
 b. Then I found the expectation of the number of rounds for Alice to get some T wins using monte carlo simulations.<br />
 3) In the second case, Bob uniformly chooses his play style.<br />
 a. I have simulated Alice's strategy to maximise the number of points gained in the current round.<br />
-b. Found the optimal strategy for Alice to maximise the expected number of points in some T future rounds and calculated that expectation.<br />
+b. Found the optimal strategy for Alice to maximise the expected number of points in some T future rounds using dynamic programming and calculated that expectation.<br />
